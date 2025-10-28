@@ -44,7 +44,7 @@ jobs:
             
             
       - name: Add labels
-        if: steps.check_maintainer.outputs.is_maintainer == 'false'
+        #if: steps.check_maintainer.outputs.is_maintainer == 'false'
         uses: actions/github-script@v6
         with:
           script: |
@@ -56,7 +56,7 @@ jobs:
             });
             
       - name: Create pending statuses
-        if: steps.check_maintainer.outputs.is_maintainer == 'false'
+        #if: steps.check_maintainer.outputs.is_maintainer == 'false'
         uses: actions/github-script@v6
         with:
           script: |
@@ -77,7 +77,7 @@ jobs:
             }
             
       - name: Create PR checklist comment
-        if: steps.check_maintainer.outputs.is_maintainer == 'false'
+        #if: steps.check_maintainer.outputs.is_maintainer == 'false'
         uses: wadackel/checkbox-workflow-action@v1
         with:
           id: pr-checklist
