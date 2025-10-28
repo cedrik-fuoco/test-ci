@@ -20,19 +20,28 @@ jobs:
           script: |
             // Fetch the PR author
             const prUser = context.payload.pull_request.user.login;
+            console.log(`PR author: ${prUser}`);
 
             // Check if author is a collaborator (maintainer)
             try {
-              const { data: isCollaborator } = await github.rest.repos.checkCollaborator({
+              const { status } = await github.rest.repos.checkCollaborator({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 username: prUser,
               });
+              console.log(`Collaborator check status: ${status}`);
+              console.log(`${prUser} is a maintainer.`);
               core.setOutput("is_maintainer", true);
             } catch (error) {
-              // If 404, user is not a collaborator
-              core.setOutput("is_maintainer", false);
+              if (error.status === 404) {
+                console.log(`${prUser} is NOT a maintainer.`);
+                core.setOutput("is_maintainer", false);
+              } else {
+                console.log(`Error checking collaborator: ${error}`);
+                throw error;
+              }
             }
+            
             
       - name: Add labels
         uses: actions/github-script@v6
