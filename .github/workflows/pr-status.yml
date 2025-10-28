@@ -6,11 +6,34 @@ on:
 permissions:
   pull-requests: write
   statuses: write
+  issues: write  # needed to add labels
+  contents: read # needed to get collaborators
 
 jobs:
   setup:
     runs-on: ubuntu-latest
     steps:
+      - name: Check if PR author is a maintainer
+        id: check_maintainer
+        uses: actions/github-script@v6
+        with:
+          script: |
+            // Fetch the PR author
+            const prUser = context.payload.pull_request.user.login;
+
+            // Check if author is a collaborator (maintainer)
+            try {
+              const { data: isCollaborator } = await github.rest.repos.checkCollaborator({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                username: prUser,
+              });
+              core.setOutput("is_maintainer", true);
+            } catch (error) {
+              // If 404, user is not a collaborator
+              core.setOutput("is_maintainer", false);
+            }
+            
       - name: Add labels
         uses: actions/github-script@v6
         with:
